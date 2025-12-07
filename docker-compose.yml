@@ -1,0 +1,129 @@
+version: '3.8'
+
+services:
+  # Frontend - React Application
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_COURSE_API=http://localhost:3001
+      - REACT_APP_USER_API=http://localhost:3002
+    depends_on:
+      - course-service
+      - user-service
+    networks:
+      - learning-platform
+
+  # Course Service - Node.js REST API
+  course-service:
+    build:
+      context: ./apps/course-service
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongo:27017/courses
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - learning-platform
+    volumes:
+      - ./apps/course-service:/app
+      - /app/node_modules
+
+  # User Service - Python Flask API
+  user-service:
+    build:
+      context: ./apps/user-service
+      dockerfile: Dockerfile
+    ports:
+      - "3002:5000"
+    environment:
+      - FLASK_ENV=development
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/users
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=dev-secret-key
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - learning-platform
+    volumes:
+      - ./apps/user-service:/app
+
+  # Notification Service - Go Microservice
+  notification-service:
+    build:
+      context: ./apps/notification-service
+      dockerfile: Dockerfile
+    ports:
+      - "3003:8080"
+    environment:
+      - GO_ENV=development
+      - REDIS_URL=redis://redis:6379
+      - SMTP_HOST=mailhog
+      - SMTP_PORT=1025
+    depends_on:
+      - redis
+      - mailhog
+    networks:
+      - learning-platform
+
+  # MongoDB for Course Service
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - learning-platform
+
+  # PostgreSQL for User Service
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=users
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - learning-platform
+
+  # Redis for Caching & Pub/Sub
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - learning-platform
+
+  # MailHog for Email Testing
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - learning-platform
+
+networks:
+  learning-platform:
+    driver: bridge
+
+volumes:
+  mongo-data:
+  postgres-data:
+  redis-data:

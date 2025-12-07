@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Platform - Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            text-align: center;
+            color: white;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .status-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .status-card h2 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .status.running {
+            background: #10b981;
+            color: white;
+        }
+
+        .status.stopped {
+            background: #ef4444;
+            color: white;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .course-card {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 2px solid #e5e7eb;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .course-card h3 {
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .course-card p {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .badge.beginner {
+            background: #10b981;
+            color: white;
+        }
+
+        .badge.intermediate {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .badge.advanced {
+            background: #ef4444;
+            color: white;
+        }
+
+        .price {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #059669;
+            margin-top: 1rem;
+        }
+
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 2rem;
+        }
+
+        .instructions h3 {
+            margin-bottom: 1rem;
+        }
+
+        .instructions ol {
+            margin-left: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .tech-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Learning Platform</h1>
+            <p>Production-Grade DevOps Project Demo</p>
+        </div>
+
+        <div class="status-card">
+            <h2>📊 Project Status</h2>
+            <div class="status stopped">⚠️ Docker Services Not Running</div>
+            <p><strong>Note:</strong> This is a static demo. To run the full application with all microservices, you
+                need to:</p>
+            <ol style="margin-left: 2rem; line-height: 1.8; margin-top: 1rem;">
+                <li>Start Docker Desktop from your Windows Start Menu</li>
+                <li>Wait for Docker Desktop to fully start (whale icon in system tray)</li>
+                <li>Run: <code
+                        style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px;">docker-compose up -d</code>
+                </li>
+            </ol>
+        </div>
+
+        <div class="status-card">
+            <h2>🚀 What's Built in This Project</h2>
+            <div class="tech-stack">
+                <span class="tech-badge">React Frontend</span>
+                <span class="tech-badge">Node.js API</span>
+                <span class="tech-badge">Python API</span>
+                <span class="tech-badge">Go Microservice</span>
+                <span class="tech-badge">MongoDB</span>
+                <span class="tech-badge">PostgreSQL</span>
+                <span class="tech-badge">Redis</span>
+                <span class="tech-badge">Terraform</span>
+                <span class="tech-badge">Kubernetes</span>
+                <span class="tech-badge">ArgoCD</span>
+                <span class="tech-badge">Prometheus</span>
+                <span class="tech-badge">Grafana</span>
+            </div>
+        </div>
+
+        <div class="status-card">
+            <h2>📚 Sample Courses (Demo Data)</h2>
+            <div class="courses-grid">
+                <div class="course-card">
+                    <div>
+                        <span class="badge beginner">Beginner</span>
+                        <span class="badge" style="background: #8b5cf6; color: white;">Programming</span>
+                    </div>
+                    <h3>Introduction to DevOps</h3>
+                    <p>Learn the fundamentals of DevOps practices, tools, and culture. Perfect for beginners.</p>
+                    <div><strong>👤</strong> John Smith</div>
+                    <div><strong>⏱️</strong> 10 hours</div>
+                    <div class="price">$49</div>
+                    <button class="btn">Enroll Now</button>
+                </div>
+
+                <div class="course-card">
+                    <div>
+                        <span class="badge intermediate">Intermediate</span>
+                        <span class="badge" style="background: #8b5cf6; color: white;">Programming</span>
+                    </div>
+                    <h3>Kubernetes Mastery</h3>
+                    <p>Deep dive into Kubernetes orchestration, deployments, and best practices.</p>
+                    <div><strong>👤</strong> Sarah Johnson</div>
+                    <div><strong>⏱️</strong> 20 hours</div>
+                    <div class="price">$99</div>
+                    <button class="btn">Enroll Now</button>
+                </div>
+
+                <div class="course-card">
+                    <div>
+                        <span class="badge advanced">Advanced</span>
+                        <span class="badge" style="background: #8b5cf6; color: white;">Programming</span>
+                    </div>
+                    <h3>AWS Architecture</h3>
+                    <p>Design and implement scalable, highly available AWS solutions with Terraform.</p>
+                    <div><strong>👤</strong> Mike Chen</div>
+                    <div><strong>⏱️</strong> 30 hours</div>
+                    <div class="price">$149</div>
+                    <button class="btn">Enroll Now</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>🔧 How to Run the Full Application</h3>
+            <ol>
+                <li><strong>Start Docker Desktop:</strong> Search for "Docker Desktop" in Windows Start Menu and launch
+                    it</li>
+                <li><strong>Wait for Docker to be ready:</strong> Look for the whale icon in your system tray
+                    (bottom-right)</li>
+                <li><strong>Open Terminal in project folder:</strong> <code>C:\Users\ASUS\LEARNING_PROJECT</code></li>
+                <li><strong>Run:</strong> <code>docker-compose up -d</code></li>
+                <li><strong>Access services:</strong>
+                    <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                        <li>Frontend: <a href="http://localhost:3000" style="color: #fbbf24;">http://localhost:3000</a>
+                        </li>
+                        <li>Course API: <a href="http://localhost:3001"
+                                style="color: #fbbf24;">http://localhost:3001</a></li>
+                        <li>User API: <a href="http://localhost:3002" style="color: #fbbf24;">http://localhost:3002</a>
+                        </li>
+                        <li>Notification API: <a href="http://localhost:3003"
+                                style="color: #fbbf24;">http://localhost:3003</a></li>
+                    </ul>
+                </li>
+            </ol>
+            <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.9;">
+                ⚠️ <strong>Important:</strong> Docker Desktop MUST be running before you can start the services. This
+                demo page works without Docker, but the full application requires it.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Add click handlers to buttons
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                alert('Full enrollment functionality requires the backend services to be running.\n\nPlease start Docker Desktop and run: docker-compose up -d');
+            });
+        });
+    </script>
+</body>
+
+</html>

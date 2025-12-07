@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: learning-platform
+  namespace: argocd
+spec:
+  description: Learning Platform Project
+  
+  # Source repositories
+  sourceRepos:
+    - 'https://github.com/yourorg/learning-platform.git'
+    - 'https://github.com/yourorg/learning-platform-gitops.git'
+  
+  # Allowed destinations
+  destinations:
+    - namespace: 'learning-platform-*'
+      server: https://kubernetes.default.svc
+    - namespace: 'kube-system'
+      server: https://kubernetes.default.svc
+  
+  # Cluster resource whitelist
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+    - group: 'rbac.authorization.k8s.io'
+      kind: ClusterRole
+    - group: 'rbac.authorization.k8s.io'
+      kind: ClusterRoleBinding
+  
+  # Namespace resource whitelist
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  
+  # Orphaned resources policy
+  orphanedResources:
+    warn: true
