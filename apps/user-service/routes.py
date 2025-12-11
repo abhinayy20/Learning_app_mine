@@ -3,6 +3,7 @@ from models import User
 from app import db
 from services.auth_service import create_token
 from services.cache_service import cache_get, cache_set, cache_delete
+from twilio_service import send_verification_code, verify_code
 
 auth_bp = Blueprint('auth', __name__)
 user_bp = Blueprint('users', __name__)
@@ -10,9 +11,43 @@ health_bp = Blueprint('health', __name__)
 
 # ==================== AUTH ROUTES ====================
 
+@auth_bp.route('/send-otp', methods=['POST'])
+def send_otp():
+    """Send OTP to phone number"""
+    data = request.get_json()
+    phone = data.get('phone')
+    
+    if not phone:
+        return jsonify({
+            'success': False,
+            'message': 'Phone number is required'
+        }), 400
+    
+    result = send_verification_code(phone)
+    
+    return jsonify(result), 200 if result['success'] else 400
+
+@auth_bp.route('/verify-otp', methods=['POST'])
+def verify_otp():
+    """Verify OTP code"""
+    data = request.get_json()
+    phone = data.get('phone')
+    code = data.get('code')
+    
+    if not phone or not code:
+        return jsonify({
+            'success': False,
+            'message': 'Phone number and code are required'
+        }), 400
+    
+    result = verify_code(phone, code)
+    
+    return jsonify(result), 200 if result['success'] else 400
+
 @auth_bp.route('/register', methods=['POST'])
 def register():
     """Register a new user"""
+    from datetime import datetime as dt
     data = request.get_json()
     
     # Validate required fields
@@ -37,14 +72,31 @@ def register():
             'message': 'Username already taken'
         }), 409
     
-    # Create new user
+    # Create new user with all profile fields
     user = User(
         email=data['email'],
         username=data['username'],
         first_name=data.get('first_name'),
         last_name=data.get('last_name'),
+        full_name=data.get('full_name'),
+        gender=data.get('gender'),
+        phone=data.get('phone'),
+        college_name=data.get('college_name'),
+        enrolled_course=data.get('enrolled_course'),
+        address=data.get('address'),
+        city=data.get('city'),
+        state=data.get('state'),
+        country=data.get('country'),
         role=data.get('role', 'student')
     )
+    
+    # Parse date of birth if provided
+    if data.get('date_of_birth'):
+        try:
+            user.date_of_birth = dt.strptime(data['date_of_birth'], '%Y-%m-%d').date()
+        except ValueError:
+            pass
+    
     user.set_password(data['password'])
     
     db.session.add(user)

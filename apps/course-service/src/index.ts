@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { config } from './config';
 import courseRoutes from './routes/course.routes';
+import enrollmentRoutes from './routes/enrollment.routes';
 import healthRoutes from './routes/health.routes';
 import { errorHandler } from './middleware/error.middleware';
 import { metricsMiddleware, initMetrics } from './middleware/metrics.middleware';
@@ -26,6 +27,7 @@ app.use(metricsMiddleware);
 // Routes
 app.use('/health', healthRoutes);
 app.use('/api/courses', courseRoutes);
+app.use('/api/enrollments', enrollmentRoutes);
 
 // Root route
 app.get('/', (req: Request, res: Response) => {

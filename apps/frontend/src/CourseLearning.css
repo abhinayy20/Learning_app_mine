@@ -1,0 +1,299 @@
+.course-learning {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #e2e8f0;
+}
+
+.learning-header {
+    background: rgba(30, 41, 59, 0.8);
+    padding: 2rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.back-button {
+    color: #22d3ee;
+    text-decoration: none;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    display: inline-block;
+    transition: color 0.2s;
+}
+
+.back-button:hover {
+    color: #8b5cf6;
+}
+
+.learning-header h1 {
+    margin: 1rem 0 0 0;
+    font-size: 2rem;
+    color: #f1f5f9;
+}
+
+.learning-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+}
+
+/* Timer Section */
+.timer-section {
+    text-align: center;
+}
+
+.timer-section h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: #22d3ee;
+}
+
+.timer-display {
+    margin: 3rem 0;
+    position: relative;
+}
+
+.timer-circle {
+    position: relative;
+    display: inline-block;
+}
+
+.timer-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.click-count {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.click-label {
+    font-size: 1rem;
+    color: #94a3b8;
+    margin-top: 0.5rem;
+}
+
+.instruction-text {
+    font-size: 1.2rem;
+    color: #cbd5e1;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.learn-button {
+    padding: 1.5rem 3rem;
+    background: linear-gradient(135deg, #22d3ee 0%, #8b5cf6 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(34, 211, 238, 0.3);
+    margin: 2rem 0;
+}
+
+.learn-button:hover:not(:disabled) {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(34, 211, 238, 0.5);
+}
+
+.learn-button:active:not(:disabled) {
+    transform: translateY(0) scale(0.98);
+}
+
+.learn-button:disabled {
+    background: #10b981;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.progress-info {
+    margin: 2rem 0;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 20px;
+    background: rgba(30, 41, 59, 0.8);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #22d3ee 0%, #8b5cf6 100%);
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 1.1rem;
+}
+
+.timer-message {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    margin: 2rem 0;
+}
+
+.course-info {
+    background: rgba(30, 41, 59, 0.6);
+    padding: 2rem;
+    border-radius: 12px;
+    margin-top: 3rem;
+    text-align: left;
+}
+
+.course-info p {
+    margin: 0.75rem 0;
+    font-size: 1.1rem;
+    color: #cbd5e1;
+}
+
+/* Completion Section */
+.completion-section {
+    text-align: center;
+}
+
+.success-animation {
+    font-size: 6rem;
+    animation: bounce 1s ease-in-out infinite;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.completion-section h2 {
+    font-size: 2.5rem;
+    color: #22d3ee;
+    margin: 1rem 0;
+}
+
+.completion-message {
+    font-size: 1.3rem;
+    color: #cbd5e1;
+    margin: 1.5rem 0;
+}
+
+.certificate-preview {
+    background: white;
+    color: #333;
+    padding: 3rem;
+    border-radius: 12px;
+    margin: 2rem 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.certificate-preview h3 {
+    color: #667eea;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.certificate-preview p {
+    margin: 1rem 0;
+    font-size: 1.1rem;
+}
+
+.completion-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+.btn-download {
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-download:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+    padding: 1rem 2rem;
+    background: transparent;
+    color: #e2e8f0;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: white;
+}
+
+/* Error Page */
+.error-page {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.error-page h2 {
+    color: #f87171;
+    margin-bottom: 2rem;
+}
+
+.loading {
+    text-align: center;
+    padding: 4rem 2rem;
+    font-size: 1.5rem;
+    color: #94a3b8;
+}
+
+/* Unenroll Button */
+.btn-unenroll {
+    padding: 0.75rem;
+    background: transparent;
+    color: #f87171;
+    border: 1px solid #f87171;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 0.5rem;
+    width: 100%;
+}
+
+.btn-unenroll:hover {
+    background: rgba(248, 113, 113, 0.1);
+    border-color: #ef4444;
+}
+
+.course-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}

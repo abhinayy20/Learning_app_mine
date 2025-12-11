@@ -7,7 +7,7 @@ services:
       context: ./apps/frontend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "3000:80"
     environment:
       - REACT_APP_COURSE_API=http://localhost:3001
       - REACT_APP_USER_API=http://localhost:3002
@@ -34,11 +34,11 @@ services:
       - redis
     networks:
       - learning-platform
-    volumes:
-      - ./apps/course-service:/app
-      - /app/node_modules
+    # volumes:
+    #   - ./apps/course-service:/app
+    #   - /app/node_modules
 
-  # User Service - Python Flask API
+    # User Service - Python Flask API
   user-service:
     build:
       context: ./apps/user-service
@@ -50,6 +50,8 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/users
       - REDIS_URL=redis://redis:6379
       - JWT_SECRET=dev-secret-key
+    env_file:
+      - ./apps/user-service/.env
     depends_on:
       - postgres
       - redis
@@ -114,8 +116,8 @@ services:
   mailhog:
     image: mailhog/mailhog:latest
     ports:
-      - "1025:1025"  # SMTP
-      - "8025:8025"  # Web UI
+      - "1025:1025" # SMTP
+      - "8025:8025" # Web UI
     networks:
       - learning-platform
 

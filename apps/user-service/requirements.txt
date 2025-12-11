@@ -9,3 +9,4 @@ PyJWT==2.8.0
 bcrypt==4.1.2
 prometheus-flask-exporter==0.23.0
 gunicorn==21.2.0
+twilio==8.10.0

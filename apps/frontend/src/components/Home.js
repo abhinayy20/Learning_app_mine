@@ -10,7 +10,7 @@ export default function Home() {
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
-    const { currentUser, logout } = useAuth();
+    const { currentUser, logout, getUserData } = useAuth();
 
     useEffect(() => {
         fetchCourses();
@@ -138,6 +138,7 @@ export default function Home() {
                                     <span className="user-avatar">👤</span>
                                     <span className="user-email">{currentUser.email}</span>
                                 </div>
+                                <Link to="/dashboard" className="btn-secondary btn-sm" style={{ marginRight: '10px' }}>My Dashboard</Link>
                                 <button onClick={handleLogout} className="btn-secondary btn-sm">Log Out</button>
                             </div>
                         ) : (
@@ -151,6 +152,31 @@ export default function Home() {
             </header>
 
             <main className="container">
+                {currentUser && (
+                    <div className="welcome-banner">
+                        <div className="welcome-content">
+                            <h2>👋 Welcome back, <span className="user-highlight">{getUserData()?.full_name || getUserData()?.username || currentUser.email.split('@')[0]}</span>!</h2>
+                            <p className="welcome-subtitle">Ready to continue your learning journey?</p>
+                        </div>
+                        <div className="welcome-stats">
+                            <div className="stat-item">
+                                <span className="stat-icon">📚</span>
+                                <div>
+                                    <div className="stat-number">{filteredCourses.length}</div>
+                                    <div className="stat-label">Courses Available</div>
+                                </div>
+                            </div>
+                            <div className="stat-item">
+                                <span className="stat-icon">🎯</span>
+                                <div>
+                                    <div className="stat-number">24/7</div>
+                                    <div className="stat-label">Access Anytime</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 <div className="controls-section">
                     <div className="search-bar">
                         <input
@@ -218,11 +244,50 @@ export default function Home() {
 
                                     <button
                                         className="btn-enroll"
-                                        onClick={() => {
+                                        onClick={async (event) => {
                                             if (!currentUser) {
                                                 alert("Please log in to enroll in this course!");
-                                            } else {
-                                                alert(`🎉 Successfully enrolled in ${course.title}!\n\nWelcome to the course, ${currentUser.email}!`);
+                                                return;
+                                            }
+
+                                            const button = event.currentTarget;
+                                            button.textContent = 'Enrolling...';
+                                            button.disabled = true;
+
+                                            try {
+                                                const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+                                                const token = localStorage.getItem('authToken');
+
+                                                const response = await fetch(`${API_BASE}/api/enrollments`, {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/json',
+                                                        'x-user-id': userData.id || currentUser.uid,
+                                                    },
+                                                    body: JSON.stringify({
+                                                        courseId: course._id,
+                                                        userId: userData.id || currentUser.uid
+                                                    })
+                                                });
+
+                                                const data = await response.json();
+
+                                                if (data.success) {
+                                                    button.textContent = '✓ Enrolled!';
+                                                    button.style.background = '#10b981';
+                                                    setTimeout(() => {
+                                                        alert(`🎉 Successfully enrolled in ${course.title}!\n\nGo to Dashboard to start learning!`);
+                                                    }, 500);
+                                                } else {
+                                                    button.textContent = 'Enroll Now';
+                                                    button.disabled = false;
+                                                    alert(data.message || 'Failed to enroll in course');
+                                                }
+                                            } catch (error) {
+                                                console.error('Enrollment error:', error);
+                                                button.textContent = 'Enroll Now';
+                                                button.disabled = false;
+                                                alert('Failed to enroll. Please try again.');
                                             }
                                         }}
                                     >
