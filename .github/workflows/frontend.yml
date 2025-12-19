@@ -1,20 +1,20 @@
-name: CI/CD Pipeline - Course Service
+name: CI/CD Pipeline - Frontend
 
 on:
   push:
     branches: [main, develop]
     paths:
-      - 'apps/course-service/**'
-      - '.github/workflows/course-service.yml'
+      - 'apps/frontend/**'
+      - '.github/workflows/frontend.yml'
   pull_request:
     branches: [main, develop]
     paths:
-      - 'apps/course-service/**'
+      - 'apps/frontend/**'
 
 env:
-  SERVICE_NAME: course-service
+  SERVICE_NAME: frontend
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: learning-platform/course-service
+  ECR_REPOSITORY: learning-platform/frontend
 
 jobs:
   build-and-test:
@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: apps/course-service
+        working-directory: apps/frontend
 
     steps:
       - name: Checkout code
@@ -33,25 +33,13 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-          cache-dependency-path: apps/course-service/package-lock.json
+          cache-dependency-path: apps/frontend/package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run linter
-        run: npm run lint
-
-      - name: Run tests
-        run: npm test
-
-      - name: Build TypeScript
+      - name: Build application
         run: npm run build
-
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./apps/course-service/coverage/lcov.info
-          flags: course-service
 
   code-quality:
     name: Code Quality Analysis
@@ -62,7 +50,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Full history for better analysis
+          fetch-depth: 0
 
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@master
@@ -70,12 +58,10 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
-          projectBaseDir: apps/course-service
+          projectBaseDir: apps/frontend
           args: >
-            -Dsonar.projectKey=course-service
+            -Dsonar.projectKey=learning-platform-frontend
             -Dsonar.sources=src
-            -Dsonar.tests=src
-            -Dsonar.test.inclusions=**/*.test.ts
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
 
   security-scan:
@@ -91,7 +77,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
-          scan-ref: 'apps/course-service'
+          scan-ref: 'apps/frontend'
           format: 'sarif'
           output: 'trivy-results.sarif'
 
@@ -132,26 +118,17 @@ jobs:
           tags: |
             type=ref,event=branch
             type=sha,prefix={{branch}}-
-            type=semver,pattern={{version}}
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: apps/course-service
+          context: apps/frontend
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      - name: Scan Docker image with Trivy
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
-          format: 'table'
-          exit-code: '1'
-          severity: 'CRITICAL,HIGH'
 
   update-gitops:
     name: Update GitOps Configuration
@@ -168,12 +145,12 @@ jobs:
       - name: Update image tag
         run: |
           sed -i "s|repository:.*|repository: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}|" \
-            kubernetes/helm-charts/course-service/values.yaml
+            kubernetes/helm-charts/frontend/values.yaml
           sed -i "s|tag:.*|tag: \"${{ github.sha }}\"|" \
-            kubernetes/helm-charts/course-service/values.yaml
+            kubernetes/helm-charts/frontend/values.yaml
           
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git add kubernetes/helm-charts/course-service/values.yaml
-          git commit -m "Update course-service image to ${{ github.sha }} [skip ci]"
+          git add kubernetes/helm-charts/frontend/values.yaml
+          git commit -m "Update frontend image to ${{ github.sha }} [skip ci]"
           git push

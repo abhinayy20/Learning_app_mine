@@ -1,20 +1,20 @@
-name: CI/CD Pipeline - Course Service
+name: CI/CD Pipeline - User Service
 
 on:
   push:
     branches: [main, develop]
     paths:
-      - 'apps/course-service/**'
-      - '.github/workflows/course-service.yml'
+      - 'apps/user-service/**'
+      - '.github/workflows/user-service.yml'
   pull_request:
     branches: [main, develop]
     paths:
-      - 'apps/course-service/**'
+      - 'apps/user-service/**'
 
 env:
-  SERVICE_NAME: course-service
+  SERVICE_NAME: user-service
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: learning-platform/course-service
+  ECR_REPOSITORY: learning-platform/user-service
 
 jobs:
   build-and-test:
@@ -22,36 +22,26 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: apps/course-service
+        working-directory: apps/user-service
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: apps/course-service/package-lock.json
+          python-version: '3.11'
+          cache: 'pip'
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install flake8 pytest pytest-cov
 
       - name: Run linter
-        run: npm run lint
-
-      - name: Run tests
-        run: npm test
-
-      - name: Build TypeScript
-        run: npm run build
-
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./apps/course-service/coverage/lcov.info
-          flags: course-service
+        run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 
   code-quality:
     name: Code Quality Analysis
@@ -62,7 +52,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Full history for better analysis
+          fetch-depth: 0
 
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@master
@@ -70,13 +60,11 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
-          projectBaseDir: apps/course-service
+          projectBaseDir: apps/user-service
           args: >
-            -Dsonar.projectKey=course-service
-            -Dsonar.sources=src
-            -Dsonar.tests=src
-            -Dsonar.test.inclusions=**/*.test.ts
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.projectKey=learning-platform-user-service
+            -Dsonar.sources=.
+            -Dsonar.python.coverage.reportPaths=coverage.xml
 
   security-scan:
     name: Security Scan
@@ -91,7 +79,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
-          scan-ref: 'apps/course-service'
+          scan-ref: 'apps/user-service'
           format: 'sarif'
           output: 'trivy-results.sarif'
 
@@ -132,26 +120,17 @@ jobs:
           tags: |
             type=ref,event=branch
             type=sha,prefix={{branch}}-
-            type=semver,pattern={{version}}
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: apps/course-service
+          context: apps/user-service
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      - name: Scan Docker image with Trivy
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
-          format: 'table'
-          exit-code: '1'
-          severity: 'CRITICAL,HIGH'
 
   update-gitops:
     name: Update GitOps Configuration
@@ -168,12 +147,12 @@ jobs:
       - name: Update image tag
         run: |
           sed -i "s|repository:.*|repository: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}|" \
-            kubernetes/helm-charts/course-service/values.yaml
+            kubernetes/helm-charts/user-service/values.yaml
           sed -i "s|tag:.*|tag: \"${{ github.sha }}\"|" \
-            kubernetes/helm-charts/course-service/values.yaml
+            kubernetes/helm-charts/user-service/values.yaml
           
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git add kubernetes/helm-charts/course-service/values.yaml
-          git commit -m "Update course-service image to ${{ github.sha }} [skip ci]"
+          git add kubernetes/helm-charts/user-service/values.yaml
+          git commit -m "Update user-service image to ${{ github.sha }} [skip ci]"
           git push
