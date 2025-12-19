@@ -211,8 +211,8 @@ export default function Home() {
                                 <p>Try adjusting your search or filter</p>
                             </div>
                         ) : (
-                            filteredCourses.map((course) => (
-                                <div key={course._id} className="course-card">
+                            filteredCourses.map((course, index) => (
+                                <div key={course._id} className="course-card" style={{ animationDelay: `${index * 0.1}s` }}>
                                     <div className="course-header">
                                         <span className={`badge badge-${course.level}`}>
                                             {course.level}
